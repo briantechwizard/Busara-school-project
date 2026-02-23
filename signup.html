@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Busara Primary & Junior Secondary School</title>
+    <link rel="stylesheet" href="styles.css">
+	<style>
+    .signup-container input,
+    .signup-container select,
+    .signup-container button {
+        position: relative !important;
+        z-index: 1000 !important;
+        pointer-events: auto !important;
+    }
+</style>
+</head>
+<body style="padding: 2rem 0;">
+    <div class="signup-container">
+        <div class="glass-card" style="padding: 3.5rem; max-width: 450px; margin: 0 auto; box-shadow: 0 35px 80px rgba(0,0,0,0.4);">
+            <h2 style="text-align: center; color: #a8e6cf; margin-bottom: 2.5rem; font-size: 2.2rem; font-weight: 700;">Create Account</h2>
+            <form id="signupForm" style="display: flex; flex-direction: column; gap: 1.6rem;">
+                <div class="form-group">
+                    <input type="text" id="fullName" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="Email Address" required>
+                </div>
+                <div class="form-group">
+                    <input type="tel" id="phone" placeholder="Phone (+254...)" required>
+                </div>
+                <div class="form-group">
+                    <select id="role" required>
+                        <option value="">Select Role</option>
+                        <option value="Parent/Guardian">Parent/Guardian</option>
+                        <option value="Student">Student</option>
+                        <option value="Staff/Teacher">Staff/Teacher</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="studentId" placeholder="Student ID (if applicable)">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <input type="checkbox" id="terms" required style="width: 20px; height: 20px; margin-top: 0.2rem;">
+                    <label for="terms" style="font-size: 0.9rem; opacity: 0.9; cursor: pointer;">I agree to Terms & Conditions</label>
+                </div>
+                <button type="submit" class="btn" style="width: 100%; padding: 1.3rem; font-size: 1.1rem;" id="submitBtn">
+                    Create Account
+                </button>
+            </form>
+            <p style="text-align: center; margin-top: 2.5rem; opacity: 0.9; font-size: 1rem;">
+                Already have an account? 
+                <a href="login.html" style="color: #00f5ff; font-weight: 600;">Sign In</a>
+            </p>
+            <a href="index.html" class="btn" style="width: 100%; background: linear-gradient(135deg, rgba(255,193,7,0.3), rgba(255,193,7,0.3)); border-color: rgba(255,193,7,0.5); margin-top: 1rem;">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        // ULTRA-SIMPLE - NO SQL.JS - WORKS IMMEDIATELY
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Creating Account...';
+            submitBtn.disabled = true;
+
+            // Get form data
+            const userData = {
+                name: document.getElementById('fullName').value.trim(),
+                email: document.getElementById('email').value.trim().toLowerCase(),
+                phone: document.getElementById('phone').value.trim(),
+                role: document.getElementById('role').value,
+                student_id: document.getElementById('studentId').value.trim() || '',
+                password: document.getElementById('password').value
+            };
+
+            // Validation
+            if (userData.name.length < 2) {
+                alert('❌ Name must be at least 2 characters');
+                resetButton();
+                return;
+            }
+            if (!userData.email.includes('@')) {
+                alert('❌ Please enter a valid email');
+                resetButton();
+                return;
+            }
+            if (userData.phone.length < 10) {
+                alert('❌ Phone number too short');
+                resetButton();
+                return;
+            }
+            if (!userData.role) {
+                alert('❌ Please select a role');
+                resetButton();
+                return;
+            }
+            if (userData.password.length < 6) {
+                alert('❌ Password must be at least 6 characters');
+                resetButton();
+                return;
+            }
+            if (userData.password !== document.getElementById('confirmPassword').value) {
+                alert('❌ Passwords do not match');
+                resetButton();
+                return;
+            }
+            if (!document.getElementById('terms').checked) {
+                alert('❌ Please accept Terms & Conditions');
+                resetButton();
+                return;
+            }
+
+            // Load existing users or create empty array
+            let users = JSON.parse(localStorage.getItem('busara_users')) || [];
+
+            // Check if email already exists
+            const emailExists = users.find(user => user.email === userData.email);
+            if (emailExists) {
+                alert('❌ Email already registered. Please use a different email.');
+                resetButton();
+                return;
+            }
+
+            // Add new user
+            users.push({
+                id: Date.now(),
+                ...userData,
+                created_at: new Date().toISOString()
+            });
+
+            // Save to localStorage
+            localStorage.setItem('busara_users', JSON.stringify(users));
+
+            // SUCCESS!
+            alert(`✅ Account created successfully!\nWelcome ${userData.name}! 🎉`);
+            window.location.href = 'login.html';
+            
+        });
+
+        function resetButton() {
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.textContent = 'Create Account';
+            submitBtn.disabled = false;
+        }
+    </script>
+</body>
+</html>

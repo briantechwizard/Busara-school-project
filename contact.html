@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Busara Primary & Junior Secondary School</title>
+    <link rel="stylesheet" href="styles.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-brand">🚌 Busara School</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="academics.html">Academics</a></li>
+                <li><a href="admissions.html">Admissions</a></li>
+                <li><a href="news.html">News</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>CONTACT US</h1>
+            <p>Reach out for admissions, inquiries, or visits</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;">
+                <div class="glass-card" style="padding: 3rem;">
+                    <h3 style="color: #00f5ff; font-size: 1.8rem; margin-bottom: 2rem;">Visit Us</h3>
+                    <div style="font-size: 1.1rem;">
+                        <p><strong>📍 Address:</strong></p>
+                        <p>Along Ngong Road<br>Nairobi, Kenya</p>
+                        <br>
+                        <p><strong>📞 Primary Office:</strong><br>+254 700 123 456<br>primary@busara.ke</p>
+                        <br>
+                        <p><strong>📞 Secondary Office:</strong><br>+254 700 123 457<br>secondary@busara.ke</p>
+                        <br>
+                        <p><strong>🕒 Hours:</strong><br>Mon-Fri: 7:30AM-5PM<br>Sat: 8AM-1PM</p>
+                    </div>
+                </div>
+                <div>
+                    <form class="contact-form">
+                        <h3 style="color: #a8e6cf; margin-bottom: 2rem; font-size: 1.8rem;">Send Message</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <input type="text" placeholder="Full Name" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" placeholder="Email Address" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="tel" placeholder="Phone Number">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" placeholder="Subject">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <textarea rows="6" placeholder="Your message..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%; padding: 1.2rem; font-size: 1.1rem;">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 Busara Primary & Junior Secondary School, Nairobi, Kenya | info@busara.ke</p>
+    </footer>
+</body>
+</html>

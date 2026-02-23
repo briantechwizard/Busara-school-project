@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fees Payment - Busara School</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-brand">🚌 Busara School</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="admissions.html">Admissions</a></li>
+                <li><a href="fees.html" class="active">Fees Payment</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="hero-content" style="text-align: center;">
+            <h1>💳 Secure Fees Payment</h1>
+            <p>Pay via M-Pesa STK Push - Instant Confirmation</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <!-- Fees Calculator -->
+            <div class="glass-card" style="max-width: 500px; margin: 0 auto 3rem;">
+                <h2 style="color: #00f5ff; text-align: center;">Fees Calculator</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0;">
+                    <div>
+                        <label>Class</label>
+                        <select id="studentClass" style="width: 100%; padding: 1rem; margin-top: 0.5rem;">
+                            <option>Grade 1-6 (Primary)</option>
+                            <option>Grade 7-9 (Junior Secondary)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Term</label>
+                        <select id="term" style="width: 100%; padding: 1rem; margin-top: 0.5rem;">
+                            <option>Term 1 - KSh 40,000</option>
+                            <option>Term 2 - KSh 40,000</option>
+                            <option>Term 3 - KSh 40,000</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <h3 style="color: #ffd23f;">Total: <span id="totalAmount">KSh 40,000</span></h3>
+                    <input type="text" id="studentName" placeholder="Student Name" style="width: 100%; padding: 1rem; margin: 1rem 0;">
+                    <input type="tel" id="phoneNumber" placeholder="Phone Number (2547xxxxxxxx)" style="width: 100%; padding: 1rem; margin-bottom: 1rem;">
+                </div>
+            </div>
+
+            <!-- Payment Button -->
+            <div class="glass-card" style="max-width: 400px; margin: 0 auto; padding: 3rem; text-align: center;">
+                <h3 style="color: #10b981; margin-bottom: 1rem;">Lipa Na M-Pesa</h3>
+                <p style="opacity: 0.9; margin-bottom: 2rem;">Secure STK Push to your phone</p>
+                <button id="payButton" class="btn" style="width: 100%; padding: 1.5rem; font-size: 1.2rem; background: linear-gradient(135deg, #10b981, #059669); border: none;">
+                    💳 Pay Now KSh <span id="payAmount">40,000</span>
+                </button>
+                <p style="margin-top: 1.5rem; opacity: 0.7; font-size: 0.9rem;">
+                    Paybill: 4490682 | Account: BusaraSchoolFees
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // UPDATE YOUR PAYSTACK KEY HERE
+        const PAYSTACK_PUBLIC_KEY = 'pk_test_4c581a69c71cd0d6ca3a4698b4c714d4bbdb5d69'; // ← Replace with your key!
+
+        // Calculate fees
+        document.getElementById('studentClass').addEventListener('change', updateAmount);
+        document.getElementById('term').addEventListener('change', updateAmount);
+
+        function updateAmount() {
+            const classSelect = document.getElementById('studentClass').value;
+            const termSelect = document.getElementById('term').value;
+            
+            let amount = 40000; // Default
+            if (classSelect.includes('Junior Secondary')) amount = 50000;
+            
+            document.getElementById('totalAmount').textContent = `KSh ${amount.toLocaleString()}`;
+            document.getElementById('payAmount').textContent = amount.toLocaleString();
+            
+            // Store amount for payment (in kobo)
+            window.paymentAmount = amount * 100;
+        }
+
+        // M-PESA PAYMENT BUTTON
+        document.getElementById('payButton').addEventListener('click', function() {
+            const studentName = document.getElementById('studentName').value.trim();
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            
+            if (!studentName || !phoneNumber) {
+                alert('Please enter student name and phone number');
+                return;
+            }
+            
+            if (!window.paymentAmount) {
+                alert('Please select class and term');
+                return;
+            }
+
+            // Show loading
+            this.textContent = '🚀 Sending M-Pesa...';
+            this.disabled = true;
+
+            // Paystack will send REAL M-Pesa STK Push!
+            const handler = PaystackPop.setup({
+                key: PAYSTACK_PUBLIC_KEY,
+                email: 'fees@busara.ke', // Fixed email
+                amount: window.paymentAmount, // In kobo
+                currency: 'KES',
+                ref: 'BusaraFees_' + Date.now(),
+                callback: function(response) {
+                    alert(`✅ Payment Successful!\nReference: ${response.reference}\nAmount: KSh ${(window.paymentAmount/100).toLocaleString()}\n\nStudent: ${studentName}`);
+                    
+                    // Save payment record
+                    savePaymentRecord({
+                        studentName,
+                        phoneNumber,
+                        amount: window.paymentAmount / 100,
+                        reference: response.reference,
+                        date: new Date().toLocaleString('en-KE')
+                    });
+                    
+                    // Redirect to receipt
+                    window.location.href = 'payment-success.html';
+                },
+                onClose: function() {
+                    alert('Payment cancelled');
+                    this.textContent = '💳 Pay Now KSh ' + (window.paymentAmount/100).toLocaleString();
+                    this.disabled = false;
+                }
+            });
+            
+            handler.openIframe();
+        });
+
+        // Save payment to localStorage (for staff to see)
+        function savePaymentRecord(payment) {
+            let payments = JSON.parse(localStorage.getItem('busaraPayments') || '[]');
+            payments.push(payment);
+            localStorage.setItem('busaraPayments', JSON.stringify(payments.slice(-100))); // Keep last 100
+        }
+
+        // Initialize
+        updateAmount();
+    </script>
+</body>
+</html>

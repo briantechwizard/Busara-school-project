@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework Portal - Busara School</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-brand">📚 Busara Homework</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="homework.html" class="active">Homework</a></li>
+                <li><a href="fees.html">Fees</a></li>
+                <li><a href="login.html">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Student Login Check -->
+    <div id="loginRequired" style="display: none; position: fixed; top: 20%; left: 50%; transform: translateX(-50%); z-index: 1001; background: rgba(255,107,107,0.95); backdrop-filter: blur(20px); border-radius: 24px; padding: 2rem; text-align: center; max-width: 400px;">
+        <h3 style="color: white;">🔐 Student Login Required</h3>
+        <p style="color: rgba(255,255,255,0.9);">Please login to access homework</p>
+        <a href="login.html" class="btn" style="background: rgba(255,255,255,0.2);">Login Now</a>
+    </div>
+
+    <section class="hero" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="hero-content" style="text-align: center;">
+            <h1>📚 Homework Portal</h1>
+            <p>Submit assignments • Track deadlines • View teacher feedback</p>
+        </div>
+    </section>
+
+    <!-- Homework Dashboard (Student Only) -->
+    <section class="section" id="homeworkSection" style="display: none;">
+        <div class="container">
+            <div id="studentWelcome" style="text-align: center; margin-bottom: 2rem; color: #00f5ff; font-size: 1.5rem;"></div>
+            
+            <!-- Homework Stats -->
+            <div class="grid" style="margin-bottom: 3rem;">
+                <div class="glass-card" style="text-align: center;">
+                    <h3 style="color: #ffd23f;">📝 Total Homework</h3>
+                    <div id="totalHomework" style="font-size: 2.5rem; font-weight: bold; color: #00f5ff;">0</div>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <h3 style="color: #10b981;">✅ Submitted</h3>
+                    <div id="submittedCount" style="font-size: 2.5rem; font-weight: bold; color: #10b981;">0</div>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <h3 style="color: #f59e0b;">⏰ Due Today</h3>
+                    <div id="dueToday" style="font-size: 2.5rem; font-weight: bold; color: #f59e0b;">0</div>
+                </div>
+            </div>
+
+            <!-- Homework Tabs -->
+            <div class="glass-card" style="padding: 2rem; margin-bottom: 2rem;">
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem; justify-content: center;">
+                    <button class="tab-btn active" onclick="showTab('pending')">Pending</button>
+                    <button class="tab-btn" onclick="showTab('submitted')">Submitted</button>
+                    <button class="tab-btn" onclick="showTab('completed')">Completed</button>
+                </div>
+                <div id="pendingTab" class="tab-content active">
+                    <div id="pendingHomework"></div>
+                </div>
+                <div id="submittedTab" class="tab-content">
+                    <div id="submittedHomework"></div>
+                </div>
+                <div id="completedTab" class="tab-content">
+                    <div id="completedHomework"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Homework Submission Modal -->
+    <div id="submitModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 id="modalTitle" style="color: #ffd23f;">Submit Homework</h2>
+                <span onclick="closeSubmitModal()" style="cursor: pointer; font-size: 2rem;">×</span>
+            </div>
+            <form id="submitForm">
+                <textarea id="studentAnswer" placeholder="Write your answer here..." rows="8" style="width: 100%; padding: 1rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; font-size: 1rem;"></textarea>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn" style="flex: 1; background: linear-gradient(135deg, #10b981, #059669);">✅ Submit</button>
+                    <button type="button" onclick="closeSubmitModal()" class="btn" style="flex: 1; background: rgba(255,255,255,0.1);">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Busara Primary & Junior Secondary School | homework@busara.ke</p>
+    </footer>
+
+    <style>
+        .tab-btn { 
+            padding: 1rem 2rem; border-radius: 25px; border: none; 
+            background: rgba(255,255,255,0.1); color: white; cursor: pointer; 
+            transition: all 0.3s; font-weight: 500; 
+        }
+        .tab-btn.active { background: rgba(255,255,255,0.3); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .homework-card { 
+            background: rgba(255,255,255,0.08); padding: 1.5rem; 
+            border-radius: 16px; margin-bottom: 1rem; border-left: 4px solid #00f5ff;
+        }
+        .status-pending { border-left-color: #f59e0b !important; }
+        .status-submitted { border-left-color: #10b981 !important; }
+        .status-completed { border-left-color: #8b5cf6 !important; }
+    </style>
+
+    <script>
+        // Check if student is logged in
+        function checkStudentLogin() {
+            const userSession = localStorage.getItem('busaraUser');
+            if (!userSession) {
+                document.getElementById('loginRequired').style.display = 'block';
+                return null;
+            }
+            try {
+                const user = JSON.parse(userSession);
+                if (user.loggedIn && user.role !== 'Staff/Teacher') {
+                    document.getElementById('homeworkSection').style.display = 'block';
+                    document.getElementById('studentWelcome').textContent = `Welcome, ${user.name}! 📚`;
+                    loadHomework();
+                    return user;
+                } else {
+                    document.getElementById('loginRequired').style.display = 'block';
+                    return null;
+                }
+            } catch (e) {
+                localStorage.removeItem('busaraUser');
+                document.getElementById('loginRequired').style.display = 'block';
+                return null;
+            }
+        }
+
+        // Load all homework for student
+        function loadHomework() {
+            const homework = JSON.parse(localStorage.getItem('busaraHomework') || '[]');
+            const submissions = JSON.parse(localStorage.getItem('busaraSubmissions') || '[]');
+            const user = JSON.parse(localStorage.getItem('busaraUser'));
+            
+            // Filter homework for this student
+            const studentHomework = homework.map(h => ({
+                ...h,
+                submitted: submissions.find(s => s.homeworkId === h.id && s.studentId === user.id),
+                score: submissions.find(s => s.homeworkId === h.id && s.studentId === user.id)?.score || null
+            }));
+
+            updateStats(studentHomework);
+            renderHomework(studentHomework, 'pending');
+        }
+
+        // Update dashboard stats
+        function updateStats(homework) {
+            const today = new Date().toDateString();
+            const pending = homework.filter(h => !h.submitted);
+            const submitted = homework.filter(h => h.submitted && !h.score);
+            const completed = homework.filter(h => h.score !== null);
+            const dueToday = homework.filter(h => new Date(h.dueDate).toDateString() === today && !h.submitted);
+
+            document.getElementById('totalHomework').textContent = homework.length;
+            document.getElementById('submittedCount').textContent = submitted.length;
+            document.getElementById('dueToday').textContent = dueToday.length;
+        }
+
+        // Render homework by status
+        function renderHomework(homework, status) {
+            let filtered;
+            if (status === 'pending') filtered = homework.filter(h => !h.submitted);
+            else if (status === 'submitted') filtered = homework.filter(h => h.submitted && !h.score);
+            else filtered = homework.filter(h => h.score !== null);
+
+            const container = document.getElementById(status + 'Homework');
+            if (filtered.length === 0) {
+                container.innerHTML = '<p style="text-align: center; opacity: 0.7;">No homework in this category</p>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(h => `
+                <div class="homework-card status-${h.submitted ? (h.score ? 'completed' : 'submitted') : 'pending'}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <h3 style="color: #00f5ff; margin: 0;">${h.title}</h3>
+                        <span style="font-size: 0.9rem; opacity: 0.8;">${new Date(h.dueDate).toLocaleDateString('en-KE')}</span>
+                    </div>
+                    <p style="margin: 0 0 1rem 0; opacity: 0.9;">${h.description}</p>
+                    ${h.submitted ? 
+                        (h.score ? 
+                            `<div style="background: rgba(139, 92, 246, 0.2); padding: 0.5rem 1rem; border-radius: 20px; display: inline-block;">
+                                <strong>Score: ${h.score}/10</strong>
+                            </div>` :
+                            `<span style="background: rgba(16, 185, 129, 0.2); padding: 0.3rem 0.8rem; border-radius: 20px;">✅ Submitted</span>`
+                        ) :
+                        `<button onclick="openSubmitModal(${h.id})" class="btn" style="padding: 0.5rem 1.5rem; font-size: 0.9rem;">
+                            📝 Submit Now
+                        </button>`
+                    }
+                </div>
+            `).join('');
+        }
+
+        // Tab switching
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            loadHomework(); // Refresh data
+        }
+
+        // Submit homework modal
+        function openSubmitModal(homeworkId) {
+            window.currentHomeworkId = homeworkId;
+            document.getElementById('submitModal').style.display = 'block';
+            document.getElementById('modalTitle').textContent = `Submit: Homework #${homeworkId}`;
+        }
+
+        function closeSubmitModal() {
+            document.getElementById('submitModal').style.display = 'none';
+            document.getElementById('submitForm').reset();
+        }
+
+        // Handle submission
+        document.getElementById('submitForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const answer = document.getElementById('studentAnswer').value.trim();
+            if (!answer) {
+                alert('Please write your answer');
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('busaraUser'));
+            const submission = {
+                id: Date.now(),
+                homeworkId: window.currentHomeworkId,
+                studentId: user.id,
+                studentName: user.name,
+                answer: answer,
+                submittedAt: new Date().toISOString(),
+                score: null // Teacher will mark later
+            };
+
+            let submissions = JSON.parse(localStorage.getItem('busaraSubmissions') || '[]');
+            submissions.push(submission);
+            localStorage.setItem('busaraSubmissions', JSON.stringify(submissions));
+
+            alert('✅ Homework submitted successfully! Teacher will mark soon.');
+            closeSubmitModal();
+            loadHomework();
+        });
+
+        // Modal close
+        window.onclick = function(event) {
+            const modal = document.getElementById('submitModal');
+            if (event.target === modal) closeSubmitModal();
+        }
+
+        // Initialize
+        window.addEventListener('load', checkStudentLogin);
+    </script>
+</body>
+</html>

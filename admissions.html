@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admissions & Management - Busara Primary & Junior Secondary School</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-brand">🚌 Busara School</div>
+            <ul class="nav-menu">
+                <li><a href="index.html"><span>Home</span></a></li>
+                <li><a href="about.html"><span>About</span></a></li>
+                <li><a href="academics.html"><span>Academics</span></a></li>
+                <li><a href="admissions.html" class="active"><span>Management</span></a></li>
+                <li><a href="fees.html"><span>💳 Fees</span></a></li>
+                <li><a href="news.html"><span>News</span></a></li>
+                <li><a href="contact.html"><span>Contact</span></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>STAFF DASHBOARD</h1>
+            <p>Complete School Management System</p>
+        </div>
+    </section>
+
+    <!-- Staff Only Warning -->
+    <div id="loginRequired" style="display: none; position: fixed; top: 20%; left: 50%; transform: translateX(-50%); z-index: 1001; background: rgba(255,107,107,0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 24px; padding: 2rem; text-align: center; max-width: 400px;">
+        <h3 style="color: white; margin-bottom: 1rem;">🔐 Staff Access Required</h3>
+        <p style="color: rgba(255,255,255,0.9);">Login with Staff/Teacher account</p>
+        <a href="login.html" class="btn" style="background: rgba(255,255,255,0.2); color: white;">Login Now</a>
+    </div>
+
+    <!-- COMPLETE STAFF DASHBOARD -->
+    <section class="section" id="staffSection" style="display: none;">
+        <div class="container">
+            <div id="userWelcome" style="text-align: center; margin-bottom: 3rem; color: #00f5ff; font-size: 1.5rem;"></div>
+            
+            <!-- STATS DASHBOARD -->
+            <div class="grid" style="margin-bottom: 3rem;">
+                <div class="glass-card" style="text-align: center;">
+                    <h3 style="color: #ffd23f;">👥 Students</h3>
+                    <div id="totalStudents" style="font-size: 2.5rem; font-weight: bold; color: #00f5ff;">0</div>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <h3 style="color: #10b981;">💰 Payments</h3>
+                    <div id="paymentCount" style="font-size: 2.5rem; font-weight: bold; color: #10b981;">0</div>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <h3 style="color: #8b5cf6;">📚 Homework</h3>
+                    <div id="homeworkCount" style="font-size: 2.5rem; font-weight: bold; color: #8b5cf6;">0</div>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <h3 style="color: #f59e0b;">📝 Submissions</h3>
+                    <div id="submissionCount" style="font-size: 2.5rem; font-weight: bold; color: #f59e0b;">0</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
+
+                <!-- LEFT COLUMN: Students + Payments -->
+                <div>
+                    <!-- STUDENT REGISTRATION -->
+                    <div class="glass-card" style="padding: 2.5rem; margin-bottom: 2rem;">
+                        <h3 style="color: #a8e6cf; margin-bottom: 1.5rem; font-size: 1.6rem;">👤 Register Student</h3>
+                        <form id="studentForm" style="display: flex; flex-direction: column; gap: 1.2rem;">
+                            <input type="text" id="studentName" placeholder="Full Name *" required>
+                            <input type="text" id="studentClass" placeholder="Class (Grade 5) *" required>
+                            <input type="number" id="studentAge" placeholder="Age *" min="3" max="18" required>
+                            <select id="studentGender" required>
+                                <option value="">Gender *</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                            <input type="text" id="assessmentNumber" placeholder="Assessment # *" required>
+                            <button type="submit" class="btn" style="width: 100%; padding: 1.2rem;" id="registerBtn">✅ Register Student</button>
+                        </form>
+                    </div>
+
+                    <!-- PAYMENTS VIEWER -->
+                    <div class="glass-card" style="padding: 2.5rem;">
+                        <h3 style="color: #00f5ff; margin-bottom: 1.5rem;">💰 Recent Payments</h3>
+                        <button onclick="viewPayments()" class="btn" style="width: 100%; padding: 1rem; margin-bottom: 1rem; background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+                            👁️ View All Payments (<span id="paymentCountBtn">0</span>)
+                        </button>
+                        <div id="recentPayments" style="max-height: 200px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Homework Management -->
+                <div>
+                    <!-- POST HOMEWORK -->
+                    <div class="glass-card" style="padding: 2.5rem; margin-bottom: 2rem;">
+                        <h3 style="color: #ef4444; margin-bottom: 1.5rem; font-size: 1.6rem;">📚 Post Homework</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                            <input type="text" id="homeworkTitle" placeholder="Homework Title *" style="padding: 1rem;">
+                            <input type="date" id="homeworkDueDate" style="padding: 1rem;">
+                        </div>
+                        <textarea id="homeworkDescription" placeholder="Instructions for students..." rows="4" style="width: 100%; padding: 1rem; margin-bottom: 1rem;"></textarea>
+                        <button onclick="addHomework()" class="btn" style="width: 100%; padding: 1.2rem; background: linear-gradient(135deg, #ef4444, #dc2626);">📤 Post to All Students</button>
+                    </div>
+
+                    <!-- VIEW SUBMISSIONS -->
+                    <div class="glass-card" style="padding: 2.5rem;">
+                        <h3 style="color: #f59e0b; margin-bottom: 1.5rem;">📝 Student Submissions</h3>
+                        <button onclick="viewSubmissions()" class="btn" style="width: 100%; padding: 1rem; margin-bottom: 1rem; background: linear-gradient(135deg, #f59e0b, #d97706);">
+                            📋 View All Submissions (<span id="submissionCountBtn">0</span>)
+                        </button>
+                        <div id="recentSubmissions" style="max-height: 200px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEARCH STUDENTS BUTTON -->
+            <div class="glass-card" style="padding: 2rem; text-align: center; margin-top: 2rem;">
+                <button onclick="openSearchModal()" class="btn" style="width: 100%; padding: 1.2rem; font-size: 1.1rem; background: linear-gradient(135deg, rgba(255,193,7,0.3), rgba(255,210,63,0.3));">
+                    🔍 Search Students (<span id="totalStudentsBtn">0</span>)
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Modal -->
+    <div id="searchModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);">
+        <div class="modal-content" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.2); border-radius: 24px; margin: 5% auto; padding: 2rem; width: 90%; max-width: 900px; max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 style="color: #ffd23f; font-size: 2rem;">🔍 Search Students</h2>
+                <span onclick="closeSearchModal()" style="cursor: pointer; font-size: 2rem; color: #e2e8f0;">×</span>
+            </div>
+            <input type="text" id="searchInput" placeholder="🔍 Search by name or assessment number..." style="width: 100%; padding: 1.2rem; font-size: 1.1rem; margin-bottom: 2rem;">
+            <div id="studentsList" style="min-height: 200px;"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Busara Primary & Junior Secondary School, Nairobi, Kenya | info@busara.ke</p>
+    </footer>
+
+    <script>
+        // COMPLETE SCHOOL MANAGEMENT SYSTEM
+
+        // 1. Staff Login Check
+        function checkStaffLogin() {
+            const userSession = localStorage.getItem('busaraUser');
+            if (!userSession) {
+                document.getElementById('loginRequired').style.display = 'block';
+                return false;
+            }
+            try {
+                const user = JSON.parse(userSession);
+                if (user.loggedIn && user.role === 'Staff/Teacher') {
+                    document.getElementById('staffSection').style.display = 'block';
+                    document.getElementById('userWelcome').textContent = `Welcome, ${user.name}! 👋`;
+                    updateDashboard();
+                    return true;
+                } else {
+                    document.getElementById('loginRequired').style.display = 'block';
+                    return false;
+                }
+            } catch (e) {
+                localStorage.removeItem('busaraUser');
+                document.getElementById('loginRequired').style.display = 'block';
+                return false;
+            }
+        }
+
+        // 2. Dashboard Stats
+        function updateDashboard() {
+            const students = JSON.parse(localStorage.getItem('busaraStudents') || '[]');
+            const payments = JSON.parse(localStorage.getItem('busaraPayments') || '[]');
+            const homework = JSON.parse(localStorage.getItem('busaraHomework') || '[]');
+            const submissions = JSON.parse(localStorage.getItem('busaraSubmissions') || '[]');
+
+            document.getElementById('totalStudents').textContent = students.length;
+            document.getElementById('totalStudentsBtn').textContent = students.length;
+            document.getElementById('paymentCount').textContent = payments.length;
+            document.getElementById('paymentCountBtn').textContent = payments.length;
+            document.getElementById('homeworkCount').textContent = homework.length;
+            document.getElementById('submissionCount').textContent = submissions.length;
+            document.getElementById('submissionCountBtn').textContent = submissions.length;
+
+            updateRecentPayments(payments.slice(-5));
+            updateRecentSubmissions(submissions.slice(-5));
+        }
+
+        // 3. INSTANT Student Registration
+        document.getElementById('studentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const registerBtn = document.getElementById('registerBtn');
+            const originalText = registerBtn.textContent;
+            
+            registerBtn.textContent = '✅ Registered!';
+            registerBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            
+            const student = {
+                id: Date.now(),
+                name: document.getElementById('studentName').value.trim(),
+                class: document.getElementById('studentClass').value.trim(),
+                age: document.getElementById('studentAge').value,
+                gender: document.getElementById('studentGender').value,
+                assessmentNumber: document.getElementById('assessmentNumber').value.trim().toUpperCase(),
+                dateAdded: new Date().toLocaleDateString('en-KE')
+            };
+
+            if (!student.name || !student.class || !student.assessmentNumber) {
+                alert('❌ Please fill all required fields');
+                resetRegisterBtn();
+                return;
+            }
+
+            let students = JSON.parse(localStorage.getItem('busaraStudents') || '[]');
+            students.push(student);
+            localStorage.setItem('busaraStudents', JSON.stringify(students.slice(-200)));
+            
+            setTimeout(() => {
+                alert(`✅ ${student.name} registered!`);
+                this.reset();
+                updateDashboard();
+                resetRegisterBtn();
+            }, 100);
+        });
+
+        function resetRegisterBtn() {
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.textContent = '✅ Register Student';
+            registerBtn.style.background = '';
+        }
+
+        // 4. HOMEWORK MANAGEMENT
+        function addHomework() {
+            const title = document.getElementById('homeworkTitle').value.trim();
+            const description = document.getElementById('homeworkDescription').value.trim();
+            const dueDate = document.getElementById('homeworkDueDate').value;
+            
+            if (!title || !description || !dueDate) {
+                alert('❌ Please fill all homework fields');
+                return;
+            }
+
+            const homework = {
+                id: Date.now(),
+                title,
+                description,
+                dueDate: dueDate + 'T23:59:59',
+                createdAt: new Date().toISOString()
+            };
+
+            let homeworkList = JSON.parse(localStorage.getItem('busaraHomework') || '[]');
+            homeworkList.push(homework);
+            localStorage.setItem('busaraHomework', JSON.stringify(homeworkList.slice(-50)));
+            
+            alert(`✅ "${title}" posted to all students!`);
+            document.getElementById('homeworkTitle').value = '';
+            document.getElementById('homeworkDescription').value = '';
+            document.getElementById('homeworkDueDate').value = '';
+            updateDashboard();
+        }
+
+        // 5. PAYMENTS & SUBMISSIONS VIEWERS
+        function viewPayments() {
+            const payments = JSON.parse(localStorage.getItem('busaraPayments') || '[]');
+            if (payments.length === 0) return alert('📊 No payments yet');
+            
+            const recent = payments.slice(-10).map(p => 
+                `${p.studentName} - KSh ${p.amount.toLocaleString()} (${p.date})`
+            ).join('\n');
+            alert(`💰 ${payments.length} Payments:\n\n${recent}`);
+        }
+
+        function viewSubmissions() {
+            const submissions = JSON.parse(localStorage.getItem('busaraSubmissions') || '[]');
+            if (submissions.length === 0) return alert('📝 No submissions yet');
+            
+            const recent = submissions.slice(-10).map(s => 
+                `${s.studentName} - HW#${s.homeworkId} (${new Date(s.submittedAt).toLocaleDateString()})`
+            ).join('\n');
+            alert(`📝 ${submissions.length} Submissions:\n\n${recent}`);
+        }
+
+        function updateRecentPayments(payments) {
+            const container = document.getElementById('recentPayments');
+            if (payments.length === 0) {
+                container.innerHTML = '<p style="opacity: 0.7;">No recent payments</p>';
+                return;
+            }
+            container.innerHTML = payments.map(p => 
+                `<div style="padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <strong>${p.studentName}</strong> - KSh ${p.amount?.toLocaleString?.() || 'N/A'}
+                </div>`
+            ).join('');
+        }
+
+        function updateRecentSubmissions(submissions) {
+            const container = document.getElementById('recentSubmissions');
+            if (submissions.length === 0) {
+                container.innerHTML = '<p style="opacity: 0.7;">No recent submissions</p>';
+                return;
+            }
+            container.innerHTML = submissions.map(s => 
+                `<div style="padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <strong>${s.studentName}</strong> - HW#${s.homeworkId}
+                </div>`
+            ).join('');
+        }
+
+        // 6. STUDENT SEARCH
+        function openSearchModal() {
+            document.getElementById('searchModal').style.display = 'block';
+            displayStudents();
+        }
+
+        function closeSearchModal() {
+            document.getElementById('searchModal').style.display = 'none';
+        }
+
+        function displayStudents(searchTerm = '') {
+            const students = JSON.parse(localStorage.getItem('busaraStudents') || '[]');
+            const container = document.getElementById('studentsList');
+            
+            const filtered = students.filter(s => 
+                s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                s.assessmentNumber.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            container.innerHTML = filtered.slice(0, 20).map(student => `
+                <div style="background: rgba(255,255,255,0.08); padding: 1.5rem; border-radius: 16px; border-left: 4px solid #00f5ff; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h4 style="color: #00f5ff; margin: 0;">${student.name}</h4>
+                        <p style="margin: 0.2rem 0; opacity: 0.9;">${student.class} • Age ${student.age} • ${student.gender}</p>
+                    </div>
+                    <span style="background: rgba(0,245,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600;">${student.assessmentNumber}</span>
+                </div>
+            `).join('') || '<p style="text-align: center; opacity: 0.7;">No students found</p>';
+        }
+
+        document.getElementById('searchInput').addEventListener('input', function() {
+            displayStudents(this.value.trim());
+        });
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('searchModal');
+            if (event.target === modal) closeSearchModal();
+        }
+
+        // Initialize
+        window.addEventListener('load', checkStaffLogin);
+    </script>
+</body>
+</html>
